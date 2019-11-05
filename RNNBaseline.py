@@ -7,11 +7,8 @@ from sklearn.model_selection import train_test_split
 
 # Prepare Dataset
 # load data
-train = pd.read_csv(r"../input/train.csv",dtype = np.float32)
-
-# split data into features(pixels) and labels(numbers from 0 to 9)
-targets_numpy = train.label.values
-features_numpy = train.loc[:,train.columns != "label"].values/255 # normalization
+features_numpy = # list of lists of length 2 # pd.read_csv(r"../input/train.csv",dtype = np.float32)
+targets_numpy = # list of length 2
 
 # train test split. Size of train data is 80% and size of test data is 20%.
 features_train, features_test, targets_train, targets_test = train_test_split(features_numpy,
@@ -82,8 +79,8 @@ train_loader = torch.utils.data.DataLoader(train, batch_size = batch_size, shuff
 test_loader = torch.utils.data.DataLoader(test, batch_size = batch_size, shuffle = False)
 
 # Create RNN
-input_dim = 28    # input dimension
-hidden_dim = 100  # hidden layer dimension
+input_dim = 3    # input dimension
+hidden_dim = 10  # hidden layer dimension
 layer_dim = 2     # number of hidden layers
 output_dim = 10   # output dimension
 
