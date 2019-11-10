@@ -6,19 +6,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-#TODO: add X_train, y_train
-#X_train =
-#y_train =
+#TODO: add X_train, y_train, X_test, y_test
+#X_train = 
+#y_train = 
+#X_test = 
+#y_test = 
 
-input_dim = 2
+input_dim = 1
 hidden_dim = 30
 layer_num = 2
 output_dim = 1
-seq_len = 3
+seq_len = len(X_train[0])
 
 
-learning_rate = 0.01
-num_epochs = 2000
+learning_rate = 0.001
+num_epochs = 500
+batch_size = 20
 
 
 class LSTMBaseline(nn.Module):
@@ -46,21 +49,34 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 hist = np.zeros(num_epochs)
 
 for t in range(num_epochs):
+    sum_loss=0
+    n_batches = 0
+    X_batches = torch.split(X_train, batch_size)
+    y_batches = torch.split(y_train, batch_size)
+    batches = zip(X_batches, y_batches)
+    for (X_batch, y_batch) in batches:
+        model.zero_grad()
+        
+        y_pred = model(X_batch)
+        
+        loss = loss_fn(y_pred, y_batch)
+        
+        sum_loss+=loss.item()
+        n_batches+=1
+        
+        optimizer.zero_grad()
     
-    y_pred = model(X_train)
+        loss.backward()
     
-    loss = loss_fn(y_pred, y_train)
+        optimizer.step()
+    sum_loss/=(n_batches)
     
-    print("Epoch: ", t, "MSE: ", loss.item())
+    print("Epoch: ", t, "MSE: ", sum_loss)
     
-    hist[t] = loss.item()
+    hist[t] = sum_loss
     
-    optimizer.zero_grad()
-    
-    loss.backward()
-    
-    optimizer.step()
-    
+
+y_pred = model(X_train)
 
 plt.plot(y_pred.detach().numpy(), label = "Preds")
 plt.plot(y_train.detach().numpy(), label="Data")
@@ -71,6 +87,9 @@ plt.plot(hist, label="Training loss")
 plt.legend()
 plt.show()
 
-plt.hist(y_pred.detach().numpy(), density=True, bins=30)
+y_test_pred=model(X_test)
 
+plt.plot(y_test_pred.detach().numpy(), label="Test Preds")
+plt.plot(y_test.detach().numpy(), label="Data")
+plt.legend()
 plt.show()
